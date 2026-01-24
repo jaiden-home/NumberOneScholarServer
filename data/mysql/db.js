@@ -5,6 +5,8 @@ class Database {
   constructor() {
     this.pool = null;
     this.isConnected = false;
+    this.reconnectAttempts = 0;
+    this.maxReconnectAttempts = 5;
   }
 
   async initialize() {
@@ -26,17 +28,30 @@ class Database {
       console.log('Database connected successfully');
       connection.release();
       this.isConnected = true;
+      this.reconnectAttempts = 0; // Reset reconnect attempts on success
     } catch (error) {
       console.error('Database connection error:', error);
       this.isConnected = false;
-      // Attempt to reconnect after delay
-      setTimeout(() => this.initialize(), 5000);
+      
+      // Attempt to reconnect after delay with limit
+      if (this.reconnectAttempts < this.maxReconnectAttempts) {
+        this.reconnectAttempts++;
+        console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+        setTimeout(() => this.initialize(), 5000);
+      } else {
+        console.error('Max reconnect attempts reached. Stopping reconnection attempts.');
+      }
     }
   }
 
   async getConnection() {
     if (!this.isConnected || !this.pool) {
       await this.initialize();
+      
+      // If still not connected after initialization, throw error
+      if (!this.isConnected || !this.pool) {
+        throw new Error('Database connection is not available');
+      }
     }
     return this.pool.getConnection();
   }

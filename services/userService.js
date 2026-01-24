@@ -1,5 +1,6 @@
 const userRepository = require('../data/mysql/userRepository');
 const { BusinessLogicError } = require('../utils/errors');
+const bcrypt = require('bcrypt');
 
 class UserService {
   async getAllUsers() {
@@ -17,10 +18,15 @@ class UserService {
       throw new BusinessLogicError('Email already exists');
     }
 
-    // Hash password (in a real-world app, you would use bcrypt here)
-    // For simplicity, we'll just store the password as-is (not recommended for production)
+    // Hash password using bcrypt
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
 
-    return userRepository.create(userData);
+    // Create user with hashed password
+    return userRepository.create({
+      ...userData,
+      password: hashedPassword
+    });
   }
 
   async updateUser(id, updates) {
@@ -38,12 +44,37 @@ class UserService {
       }
     }
 
+    // Hash password if being updated
+    if (updates.password) {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(updates.password, saltRounds);
+      updates.password = hashedPassword;
+    }
+
     return userRepository.update(id, updates);
   }
 
   async deleteUser(id) {
     const result = await userRepository.delete(id);
     return result > 0;
+  }
+
+  async login(email, password) {
+    // Find user by email
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+      throw new BusinessLogicError('Invalid email or password');
+    }
+
+    // Compare password with hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new BusinessLogicError('Invalid email or password');
+    }
+
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 }
 

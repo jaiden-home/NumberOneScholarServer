@@ -9,6 +9,13 @@ const errorHandler = (err, req, res, next) => {
   let message = err.message || 'Internal Server Error';
   let errors = err.errors || [];
 
+  // Handle database connection errors
+  if (err.message === 'Database connection is not available') {
+    statusCode = 503;
+    status = 'service_unavailable';
+    message = 'Database service is currently unavailable. Please try again later.';
+  }
+
   // Log error
   const logContext = {
     requestId: req.requestId,

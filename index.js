@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const config = require('./config');
 const logger = require('./utils/logger');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
@@ -13,6 +14,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 app.use(logger.addRequestId);
 
 // Routes
@@ -37,20 +39,22 @@ app.use(errorHandler);
 // Initialize database connection
 const initializeApp = async () => {
   try {
+    // Try to initialize database connection
     await db.initialize();
-    
-    // Start server
-    const port = config.server.port;
-    app.listen(port, () => {
-      logger.info(`Server running on port ${port}`, {
-        port,
-        environment: config.server.nodeEnv
-      });
-    });
+    logger.info('Database connection initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize app', error);
-    process.exit(1);
+    logger.warn('Failed to initialize database connection, starting server without database', error);
   }
+  
+  // Start server regardless of database connection status
+  const port = config.server.port;
+  app.listen(port, () => {
+    logger.info(`Server running on port ${port}`, {
+      port,
+      environment: config.server.nodeEnv,
+      databaseConnected: db.isConnected
+    });
+  });
 };
 
 // Start the app

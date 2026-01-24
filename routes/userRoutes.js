@@ -35,11 +35,25 @@ const updateUserSchema = [
     .withMessage('Please provide a valid email address')
 ];
 
+// Login validation schema
+const loginSchema = [
+  body('email')
+    .trim()
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required')
+];
+
 // Routes
 router.get('/', userController.getAllUsers);
 router.get('/:id', userController.getUserById);
 router.post('/', validate(createUserSchema), userController.createUser);
 router.put('/:id', validate(updateUserSchema), userController.updateUser);
 router.delete('/:id', userController.deleteUser);
+router.post('/login', validate(loginSchema), userController.login);
+router.post('/logout', userController.logout);
 
 module.exports = router;

@@ -84,6 +84,36 @@ class UserController {
       next(error);
     }
   }
+
+  async login(req, res, next) {
+    try {
+      const { email, password } = req.body;
+      const user = await userService.login(email, password);
+      res.status(200).json({
+        status: 'success',
+        data: {
+          user
+        },
+        requestId: req.requestId
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async logout(req, res, next) {
+    try {
+      // 由于当前认证机制是基于前端cookie，后端只需要返回成功响应
+      // 前端会在收到响应后清除cookie
+      res.status(200).json({
+        status: 'success',
+        message: 'Logged out successfully',
+        requestId: req.requestId
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new UserController();
