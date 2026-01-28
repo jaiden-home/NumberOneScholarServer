@@ -29,9 +29,9 @@ Docker Compose 是一种简单、可靠的方法来运行 MySQL 服务，不需�
 
 2. 这将启动一个 MySQL 容器，配置如下：
    - 端口：3306
-   - 用户名：admin
-   - 密码：password
-   - 数据库名：example_db
+   - 用户名：numberone_scholar_user
+   - 密码：NumberOneScholar2024!
+   - 数据库名：numberone_scholar_db
    - 自动初始化表结构（使用 `data/mysql/init.sql` 文件）
 
 #### 步骤 3：验证数据库连接
@@ -75,9 +75,9 @@ Docker Compose 是一种简单、可靠的方法来运行 MySQL 服务，不需�
 2. 创建数据库和用户：
 
    ```sql
-   CREATE DATABASE example_db;
-   CREATE USER 'admin'@'localhost' IDENTIFIED BY 'password';
-   GRANT ALL PRIVILEGES ON example_db.* TO 'admin'@'localhost';
+   CREATE DATABASE numberone_scholar_db;
+   CREATE USER 'numberone_scholar_user'@'localhost' IDENTIFIED BY 'NumberOneScholar2024!';
+   GRANT ALL PRIVILEGES ON numberone_scholar_db.* TO 'numberone_scholar_user'@'localhost';
    FLUSH PRIVILEGES;
    ```
 
@@ -86,7 +86,7 @@ Docker Compose 是一种简单、可靠的方法来运行 MySQL 服务，不需�
 1. 运行以下命令初始化表结构：
 
    ```bash
-   mysql -u admin -p example_db < data/mysql/init.sql
+   mysql -u numberone_scholar_user -p numberone_scholar_db < data/mysql/init.sql
    ```
 
 ## 验证数据库连接

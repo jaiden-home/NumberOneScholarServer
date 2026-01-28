@@ -3,18 +3,17 @@ const db = require('./db');
 class ScheduleRepository {
   // Create a new schedule
   async create(scheduleData) {
-    // 从scheduleData中解构，排除date字段
-    const { user_id, title, subject, week, description, duration, priority, reference } = scheduleData;
+    const { user_id, title, subject, week, date, description, duration, priority, reference } = scheduleData;
     const query = `
-      INSERT INTO schedules (user_id, title, subject, week, description, duration, priority, reference)
+      INSERT INTO schedules (user_id, title, subject, week, date, description, duration, priority, reference)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
     try {
-      const result = await db.execute(query, [user_id, title, subject, week, description, duration, priority, reference]);
+      const result = await db.execute(query, [user_id, title, subject, week, date, description, duration, priority, reference]);
       console.log('Create result:', result);
       console.log('Create result type:', typeof result);
       console.log('Create result constructor:', result.constructor.name);
-      
+
       // 尝试获取insertId，处理不同的返回值格式
       let insertId;
       if (result.insertId) {
@@ -29,7 +28,7 @@ class ScheduleRepository {
           ...scheduleData
         };
       }
-      
+
       console.log('Insert ID:', insertId);
       return this.findById(insertId);
     } catch (error) {
@@ -54,14 +53,13 @@ class ScheduleRepository {
 
   // Update a schedule
   async update(id, scheduleData) {
-    // 从scheduleData中解构，排除date字段
-    const { title, subject, week, description, duration, priority, reference } = scheduleData;
+    const { title, subject, week, date, description, duration, priority, reference } = scheduleData;
     const query = `
       UPDATE schedules
-      SET title = ?, subject = ?, week = ?, description = ?, duration = ?, priority = ?, reference = ?
+      SET title = ?, subject = ?, week = ?, date = ?, description = ?, duration = ?, priority = ?, reference = ?
       WHERE id = ?
     `;
-    await db.execute(query, [title, subject, week, description, duration, priority, reference, id]);
+    await db.execute(query, [title, subject, week, date, description, duration, priority, reference, id]);
     return this.findById(id);
   }
 
