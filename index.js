@@ -7,6 +7,7 @@ const db = require('./data/mysql/db');
 
 // Import routes
 const userRoutes = require('./routes/userRoutes');
+const scheduleRoutes = require('./routes/scheduleRoutes');
 
 // Create Express app
 const app = express();
@@ -19,6 +20,7 @@ app.use(logger.addRequestId);
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/schedules', scheduleRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

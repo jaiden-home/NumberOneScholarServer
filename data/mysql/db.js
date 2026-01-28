@@ -17,6 +17,7 @@ class Database {
         user: config.database.user,
         password: config.database.password,
         database: config.database.database,
+        charset: 'utf8mb4',
         waitForConnections: true,
         connectionLimit: config.database.pool.size,
         queueLimit: 0,
@@ -32,7 +33,7 @@ class Database {
     } catch (error) {
       console.error('Database connection error:', error);
       this.isConnected = false;
-      
+
       // Attempt to reconnect after delay with limit
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
         this.reconnectAttempts++;
@@ -47,7 +48,7 @@ class Database {
   async getConnection() {
     if (!this.isConnected || !this.pool) {
       await this.initialize();
-      
+
       // If still not connected after initialization, throw error
       if (!this.isConnected || !this.pool) {
         throw new Error('Database connection is not available');

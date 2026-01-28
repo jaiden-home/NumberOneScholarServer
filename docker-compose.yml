@@ -5,10 +5,11 @@ services:
     image: mysql:8.0
     container_name: numberone-scholar-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: password
-      MYSQL_DATABASE: example_db
+      MYSQL_ROOT_PASSWORD: RootPass2024!
+      MYSQL_USER: numberone_scholar_user
+      MYSQL_PASSWORD: NumberOneScholar2024!
+      MYSQL_DATABASE: numberone_scholar_db
+      MYSQL_INITDB_ARGS: "--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
     ports:
       - "3306:3306"
     volumes:
